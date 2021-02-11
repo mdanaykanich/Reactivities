@@ -1,19 +1,19 @@
 import React from "react";
 import { Button, Image } from "semantic-ui-react";
 import Card from "semantic-ui-react/dist/commonjs/views/Card";
-import { IActivity } from "../../../app/layout/models/activity";
+import { Activity } from "./../../../app/models/activity";
 
-interface IProps {
-	activity: IActivity;
+interface Props {
+	activity: Activity;
 	setEditMode: (editMode: boolean) => void;
-	setSelectedActivity: (activity: IActivity | null) => void;
+	setSelectedActivity: (activity: Activity | null) => void;
 }
 
-const ActivityDetails: React.FC<IProps> = ({
+const ActivityDetails = ({
 	activity,
 	setEditMode,
 	setSelectedActivity,
-}) => {
+}: Props) => {
 	return (
 		<Card>
 			<Image

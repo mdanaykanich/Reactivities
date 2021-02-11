@@ -1,11 +1,11 @@
 import React from "react";
 import { Button, Container, Menu } from "semantic-ui-react";
 
-interface IProps {
+interface Props {
 	openCreateForm: () => void;
 }
 
-const NavBar: React.FC<IProps> = ({ openCreateForm }) => {
+const NavBar = ({ openCreateForm }: Props) => {
 	return (
 		<Menu fixed='top' inverted>
 			<Container>

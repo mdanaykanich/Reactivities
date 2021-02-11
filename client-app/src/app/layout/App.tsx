@@ -1,15 +1,15 @@
 import React, { useState, useEffect, Fragment, SyntheticEvent } from "react";
 import "./styles.css";
 import { Container } from "semantic-ui-react";
-import { IActivity } from "./models/activity";
+import { Activity } from "./../models/activity";
 import NavBar from "./../../features/nav/NavBar";
 import ActivityDashboard from "./../../features/activities/dashboard/ActivityDashboard";
 import agent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
 
 const App = () => {
-	const [activities, setActivities] = useState<IActivity[]>([]);
-	const [selectedActivity, setSelectedActivity] = useState<IActivity | null>(
+	const [activities, setActivities] = useState<Activity[]>([]);
+	const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
 		null
 	);
 	const [editMode, setEditMode] = useState(false);
@@ -27,7 +27,7 @@ const App = () => {
 		setEditMode(true);
 	};
 
-	const handleCreateActivity = (activity: IActivity) => {
+	const handleCreateActivity = (activity: Activity) => {
 		setSubmitting(true);
 		agent.Activities.create(activity)
 			.then(() => {
@@ -40,7 +40,7 @@ const App = () => {
 			});
 	};
 
-	const handleEditActivity = (activity: IActivity) => {
+	const handleEditActivity = (activity: Activity) => {
 		setSubmitting(true);
 		agent.Activities.update(activity)
 			.then(() => {
@@ -74,7 +74,7 @@ const App = () => {
 	useEffect(() => {
 		agent.Activities.list()
 			.then((response) => {
-				let activities: IActivity[] = [];
+				let activities: Activity[] = [];
 				response.forEach((activity) => {
 					activity.date = activity.date.split(".")[0];
 					activities.push(activity);
@@ -88,7 +88,7 @@ const App = () => {
 		return <LoadingComponent inverted={true} content='Loading activities' />;
 
 	return (
-		<Fragment>
+		<>
 			<NavBar openCreateForm={handleOpenCreateForm} />
 			<Container style={{ marginTop: "7em" }}>
 				<ActivityDashboard
@@ -105,7 +105,7 @@ const App = () => {
 					target={target}
 				/>
 			</Container>
-		</Fragment>
+		</>
 	);
 };
 
