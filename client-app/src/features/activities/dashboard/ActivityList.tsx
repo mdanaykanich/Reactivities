@@ -1,30 +1,30 @@
-import React, { SyntheticEvent } from "react";
+import React, { SyntheticEvent, useState } from "react";
 import { Button, Item, Label, Segment } from "semantic-ui-react";
-import { Activity } from "./../../../app/models/activity";
+import { useStore } from "./../../../app/stores/store";
+import { observer } from "mobx-react-lite";
 
-interface Props {
-	activities: Activity[];
-	selectActivity: (id: string) => void;
-	deleteActivity: (e: SyntheticEvent<HTMLButtonElement>, id: string) => void;
-	submitting: boolean;
-	target: string;
-}
+const ActivityList = () => {
+	const [target, setTarget] = useState("");
+	const { activityStore } = useStore();
 
-const ActivityList = ({
-	activities,
-	selectActivity,
-	deleteActivity,
-	submitting,
-	target,
-}: Props) => {
+	const { deleteActivity, activitiesByDate, submitting } = activityStore;
+
+	const handleDeleteActivity = (
+		e: SyntheticEvent<HTMLButtonElement>,
+		id: string
+	) => {
+		setTarget(e.currentTarget.name);
+		deleteActivity(id);
+	};
+
 	return (
 		<Segment clearing>
 			<Item.Group divided>
-				{activities.map((activity) => (
+				{activitiesByDate.map((activity) => (
 					<Item key={activity.id}>
 						<Item.Content>
 							<Item.Header as='a'>{activity.title}</Item.Header>
-							<Item.Meta>{activity.date}</Item.Meta>
+							<Item.Meta>{activity.date.replace("T", " ")}</Item.Meta>
 							<Item.Description>
 								<div>{activity.description}</div>
 								<div>
@@ -33,7 +33,7 @@ const ActivityList = ({
 							</Item.Description>
 							<Item.Extra>
 								<Button
-									onClick={() => selectActivity(activity.id)}
+									onClick={() => activityStore.selectActivity(activity.id)}
 									floated='right'
 									content='View'
 									color='blue'
@@ -41,7 +41,7 @@ const ActivityList = ({
 								<Button
 									name={activity.id}
 									loading={target == activity.id && submitting}
-									onClick={(e) => deleteActivity(e, activity.id)}
+									onClick={(e) => handleDeleteActivity(e, activity.id)}
 									floated='right'
 									content='Delete'
 									color='red'
@@ -56,4 +56,4 @@ const ActivityList = ({
 	);
 };
 
-export default ActivityList;
+export default observer(ActivityList);

@@ -1,40 +1,29 @@
 import React, { FormEvent, useState } from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
-import { Activity } from "./../../../app/models/activity";
-import { v4 as uuid } from "uuid";
+import { useStore } from "./../../../app/stores/store";
+import { observer } from "mobx-react-lite";
 
-interface Props {
-	activity: Activity;
-	setEditMode: (editMode: boolean) => void;
-	createActivity: (activity: Activity) => void;
-	editActivity: (activity: Activity) => void;
-	submitting: boolean;
-}
+const ActivityForm = () => {
+	const { activityStore } = useStore();
+	const {
+		selectedActivity,
+		closeForm,
+		createActivity,
+		updateActivity,
+		submitting,
+	} = activityStore;
 
-const ActivityForm = ({
-	activity: initialFormState,
-	setEditMode,
-	createActivity,
-	editActivity,
-	submitting,
-}: Props) => {
-	const initForm = () => {
-		if (initialFormState) {
-			return initialFormState;
-		} else {
-			return {
-				id: "",
-				title: "",
-				description: "",
-				category: "",
-				date: "",
-				city: "",
-				venue: "",
-			};
-		}
+	const initialState = selectedActivity ?? {
+		id: "",
+		title: "",
+		category: "",
+		description: "",
+		date: "",
+		city: "",
+		venue: "",
 	};
 
-	const [activity, setActivity] = useState<Activity>(initForm);
+	const [activity, setActivity] = useState(initialState);
 
 	const handleInputChange = (
 		event: FormEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -44,15 +33,7 @@ const ActivityForm = ({
 	};
 
 	const handleSubmit = () => {
-		if (activity.id.length === 0) {
-			let newActivity = {
-				...activity,
-				id: uuid(),
-			};
-			createActivity(newActivity);
-		} else {
-			editActivity(activity);
-		}
+		activity.id ? updateActivity(activity) : createActivity(activity);
 	};
 
 	return (
@@ -104,7 +85,7 @@ const ActivityForm = ({
 					content='Submit'
 				/>
 				<Button
-					onClick={() => setEditMode(false)}
+					onClick={closeForm}
 					floated='right'
 					type='submit'
 					content='Cancel'
@@ -114,4 +95,4 @@ const ActivityForm = ({
 	);
 };
 
-export default ActivityForm;
+export default observer(ActivityForm);
