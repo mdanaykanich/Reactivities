@@ -18,11 +18,24 @@ export default class ActivityStore {
 		);
 	}
 
+	get groupedActivities() {
+		return Object.entries(
+			this.activitiesByDate.reduce((activities, activity) => {
+				const date = new Date(activity.date).toLocaleDateString();
+				activities[date] = activities[date]
+					? [...activities[date], activity]
+					: [activity];
+				return activities;
+			}, {} as { [key: string]: Activity[] })
+		);
+	}
+
 	loadActivities = async () => {
 		this.loading = true;
 		try {
 			const activities = await agent.Activities.list();
 			activities.forEach((activity) => {
+				activity.date = new Date(activity.date).toLocaleString();
 				this.setActivity(activity);
 			});
 			this.setLoading(false);
@@ -41,6 +54,7 @@ export default class ActivityStore {
 			this.loading = true;
 			try {
 				activity = await agent.Activities.details(id);
+				activity!.date = new Date(activity!.date).toLocaleString();
 				this.setActivity(activity!);
 				runInAction(() => {
 					this.selectedActivity = activity;
