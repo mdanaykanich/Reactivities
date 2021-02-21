@@ -1,6 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
+using AutoMapper;
+using Domain;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -8,47 +12,36 @@ namespace Application.Activities
 {
 	public class Edit
 	{
-		public class Command : IRequest
+		public class Command : IRequest<Result<Unit>>
 		{
-			public Guid Id { get; set; }
-			public string Title { get; set; }
-			public string Description { get; set; }
-			public string Category { get; set; }
-			public DateTime? Date { get; set; }
-			public string City { get; set; }
-			public string Venue { get; set; }
+			public Activity Activity { get; set; }
 		}
 
-		public class Handler : IRequestHandler<Command>
+		public class CommandValidator : AbstractValidator<Command>
+		{
+			public CommandValidator()
+			{
+				RuleFor(c => c.Activity).SetValidator(new ActivityValidator());
+			}
+		}
+
+		public class Handler : IRequestHandler<Command, Result<Unit>>
 		{
 			private readonly DataContext _context;
-			public Handler(DataContext context)
+			private IMapper _mapper;
+			public Handler(DataContext context, IMapper mapper)
 			{
+				_mapper = mapper;
 				_context = context;
 			}
-			public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+			public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
 			{
-				var activity = await _context.Activities.FindAsync(request.Id);
-
-				if (activity == null)
-				{
-					throw new Exception("Could not find activity");
-				}
-
-				activity.Title = request.Title ?? activity.Title;
-				activity.Description = request.Description ?? activity.Description;
-				activity.Category = request.Category ?? activity.Category;
-				activity.Date = request.Date ?? activity.Date;
-				activity.City = request.City ?? activity.Title;
-				activity.Venue = request.Venue ?? activity.Venue;
-
-				var success = await _context.SaveChangesAsync() > 0;
-				if (success)
-				{
-					return Unit.Value;
-				}
-
-				throw new Exception("Problem with editing");
+				var activity = await _context.Activities.FindAsync(request.Activity.Id);
+				if (activity == null) return null;
+				_mapper.Map(request.Activity, activity);
+				var result = await _context.SaveChangesAsync() > 0;
+				if (!result) return Result<Unit>.Failure("Failed to update the activity");
+				return Result<Unit>.Success(Unit.Value);
 			}
 		}
 	}

@@ -1,7 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using Domain;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -9,45 +11,32 @@ namespace Application.Activities
 {
 	public class Create
 	{
-		public class Command : IRequest
+		public class Command : IRequest<Result<Unit>>
 		{
-			public Guid Id { get; set; }
-			public string Title { get; set; }
-			public string Description { get; set; }
-			public string Category { get; set; }
-			public DateTime Date { get; set; }
-			public string City { get; set; }
-			public string Venue { get; set; }
+			public Activity Activity { get; set; }
 		}
 
-		public class Handler : IRequestHandler<Command>
+		public class CommandValidator : AbstractValidator<Command>
+		{
+			public CommandValidator()
+			{
+				RuleFor(c => c.Activity).SetValidator(new ActivityValidator());
+			}
+		}
+
+		public class Handler : IRequestHandler<Command, Result<Unit>>
 		{
 			private readonly DataContext _context;
 			public Handler(DataContext context)
 			{
 				_context = context;
 			}
-			public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+			public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
 			{
-				var activity = new Activity
-				{
-					Id = request.Id,
-					Title = request.Title,
-					Description = request.Description,
-					Category = request.Category,
-					Date = request.Date,
-					City = request.City,
-					Venue = request.Venue
-				};
-
-				_context.Activities.Add(activity);
-				var success = await _context.SaveChangesAsync() > 0;
-				if (success)
-				{
-					return Unit.Value;
-				}
-
-				throw new Exception("Problem with creating");
+				_context.Activities.Add(request.Activity);
+				var result = await _context.SaveChangesAsync() > 0;
+				if (!result) return Result<Unit>.Failure("Failed to create activity");
+				return Result<Unit>.Success(Unit.Value);
 			}
 		}
 	}

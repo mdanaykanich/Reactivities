@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Persistence;
+using FluentValidation.AspNetCore;
+using Application.Core;
+using API.Middleware;
 
 namespace API
 {
@@ -23,7 +26,10 @@ namespace API
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddControllers();
+			services.AddControllers().AddFluentValidation(config =>
+			{
+				config.RegisterValidatorsFromAssemblyContaining<ActivityValidator>();
+			});
 			services.AddCors(opt =>
 			{
 				opt.AddPolicy("CorsPolicy", policy =>
@@ -33,6 +39,7 @@ namespace API
 			});
 
 			services.AddMediatR(typeof(List.Handler).Assembly);
+			services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 			services.AddDbContext<DataContext>(opt =>
 			{
 				opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
@@ -47,9 +54,10 @@ namespace API
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			app.UseMiddleware<ExceptionMiddleware>();
+
 			if (env.IsDevelopment())
 			{
-				app.UseDeveloperExceptionPage();
 				app.UseSwagger();
 				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
 			}
