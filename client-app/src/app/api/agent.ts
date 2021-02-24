@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { debug } from "console";
 import { toast } from "react-toastify";
 import { history } from "../..";
 import { store } from "../stores/store";
