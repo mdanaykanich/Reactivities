@@ -14,6 +14,8 @@ using API.Middleware;
 using API.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Application.Interfaces;
+using Infrastructure.Security;
 
 namespace API
 {
@@ -48,9 +50,10 @@ namespace API
 
 			services.AddMediatR(typeof(List.Handler).Assembly);
 			services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+			services.AddScoped<IUserAccessor, UserAccessor>();
 			services.AddDbContext<DataContext>(opt =>
 			{
-				opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+				opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging();
 			});
 			services.AddSwaggerGen(c =>
 			{
