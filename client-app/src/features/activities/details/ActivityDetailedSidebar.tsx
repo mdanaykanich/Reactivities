@@ -1,55 +1,57 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Item, List, Segment, Image, Label } from "semantic-ui-react";
+import { Activity } from "../../../app/models/activity";
 
-const ActivityDetailedSidebar = () => (
-	<>
-		<Segment
-			textAlign='center'
-			style={{ border: "none" }}
-			attached='top'
-			secondary
-			inverted
-			color='teal'
-		>
-			3 People Going
-		</Segment>
-		<Segment attached>
-			<List relaxed divided>
-				<Item style={{ position: "relative" }}>
-					<Label style={{ position: "absolute" }} color='orange' ribbon='right'>
-						Host
-					</Label>
-					<Image size='tiny' src={"/assets/user.png"} />
-					<Item.Content verticalAlign='middle'>
-						<Item.Header as='h3'>
-							<Link to={`#`}>Bob</Link>
-						</Item.Header>
-						<Item.Extra style={{ color: "orange" }}>Following</Item.Extra>
-					</Item.Content>
-				</Item>
+interface Props {
+	activity: Activity;
+}
 
-				<Item style={{ position: "relative" }}>
-					<Image size='tiny' src={"/assets/user.png"} />
-					<Item.Content verticalAlign='middle'>
-						<Item.Header as='h3'>
-							<Link to={`#`}>Tom</Link>
-						</Item.Header>
-						<Item.Extra style={{ color: "orange" }}>Following</Item.Extra>
-					</Item.Content>
-				</Item>
+const ActivityDetailedSidebar = ({
+	activity: { attendees, hostUsername },
+}: Props) => {
+	if (!attendees) return null;
+	return (
+		<>
+			<Segment
+				textAlign='center'
+				style={{ border: "none" }}
+				attached='top'
+				secondary
+				inverted
+				color='teal'
+			>
+				{attendees.length} {attendees.length === 1 ? "Person" : "People"} going
+			</Segment>
+			<Segment attached>
+				<List relaxed divided>
+					{attendees.map((attendee) => (
+						<Item style={{ position: "relative" }} key={attendee.username}>
+							{attendee.username === hostUsername && (
+								<Label
+									style={{ position: "absolute" }}
+									color='orange'
+									ribbon='right'
+								>
+									Host
+								</Label>
+							)}
+							<Image size='tiny' src={attendee.image ?? "/assets/user.png"} />
+							<Item.Content verticalAlign='middle'>
+								<Item.Header as='h3'>
+									<Link to={`/profiles/${attendee.username}`}>
+										{attendee.displayName}
+									</Link>
+								</Item.Header>
+								<Item.Extra style={{ color: "orange" }}>Following</Item.Extra>
+							</Item.Content>
+						</Item>
+					))}
+				</List>
+			</Segment>
+		</>
+	);
+};
 
-				<Item style={{ position: "relative" }}>
-					<Image size='tiny' src={"/assets/user.png"} />
-					<Item.Content verticalAlign='middle'>
-						<Item.Header as='h3'>
-							<Link to={`#`}>Sally</Link>
-						</Item.Header>
-					</Item.Content>
-				</Item>
-			</List>
-		</Segment>
-	</>
-);
-
-export default ActivityDetailedSidebar;
+export default observer(ActivityDetailedSidebar);

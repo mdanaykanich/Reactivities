@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { history } from "../..";
 import { User, UserFormValues } from "../models/user";
 import { store } from "../stores/store";
-import { Activity } from "./../models/activity";
+import { Activity, ActivityFormValues } from "./../models/activity";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -76,10 +76,12 @@ const requests = {
 const Activities = {
 	list: () => requests.get<Activity[]>("/activities"),
 	details: (id: string) => requests.get<Activity>(`/activities/${id}`),
-	create: (activity: Activity) => requests.post<void>("/activities", activity),
-	update: (activity: Activity) =>
+	create: (activity: ActivityFormValues) =>
+		requests.post<void>("/activities", activity),
+	update: (activity: ActivityFormValues) =>
 		requests.put<void>(`/activities/${activity.id}`, activity),
 	delete: (id: string) => requests.delete<void>(`/activities/${id}`),
+	attend: (id: string) => requests.post<void>(`/activities/${id}/attend`, {}),
 };
 
 const Account = {
