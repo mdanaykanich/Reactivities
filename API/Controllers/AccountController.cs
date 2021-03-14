@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -29,7 +30,8 @@ namespace API.Controllers
 		[HttpPost("login")]
 		public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDto)
 		{
-			var user = await _userManager.FindByEmailAsync(loginDto.Email);
+			var user = await _userManager.Users.Include(p => p.Photos)
+				.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
 
 			if (user == null) return Unauthorized();
 
@@ -76,7 +78,8 @@ namespace API.Controllers
 		[HttpGet]
 		public async Task<ActionResult<UserDTO>> GetCurrentUser()
 		{
-			var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+			var user = await _userManager.Users.Include(p => p.Photos)
+				.FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
 			return CreateUserObject(user);
 		}
 
@@ -86,7 +89,7 @@ namespace API.Controllers
 			{
 				DisplayName = user.DisplayName,
 				Username = user.UserName,
-				Image = null,
+				Image = user?.Photos?.FirstOrDefault(x => x.IsMain)?.Url,
 				Token = _tokenService.CreateToken(user)
 			};
 		}

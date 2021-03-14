@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Application.Interfaces;
 using Infrastructure.Security;
+using Infrastructure.Photos;
 
 namespace API
 {
@@ -61,6 +62,8 @@ namespace API
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
 			});
 			services.AddIdentityServices(Configuration);
+			services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+			services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
