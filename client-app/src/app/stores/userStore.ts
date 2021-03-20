@@ -60,4 +60,8 @@ export default class UserStore {
 			console.log(error);
 		}
 	};
+
+	setImage = (photo: string) => {
+		if (this.user) this.user.image = photo;
+	};
 }

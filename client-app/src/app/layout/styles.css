@@ -47,3 +47,10 @@ body {
 .react-datepicker-wrapper {
 	width: 100%;
 }
+
+.header-nophotos {
+	width: 100%;
+	box-shadow: none !important;
+	border: none !important;
+	text-align: center;
+}
