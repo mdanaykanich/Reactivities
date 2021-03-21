@@ -95,4 +95,11 @@ export default class ProfileStore {
 			runInAction(() => (this.loading = false));
 		}
 	};
+
+	restoreData = () => {
+		this.profile = null;
+		this.loadingProfile = false;
+		this.uploading = false;
+		this.loading = false;
+	};
 }

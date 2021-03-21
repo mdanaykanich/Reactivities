@@ -208,4 +208,12 @@ export default class ActivityStore {
 			}
 		});
 	};
+
+	restoreData = () => {
+		this.activityRegistry = new Map<string, Activity>();
+		this.selectedActivity = undefined;
+		this.editMode = false;
+		this.loading = false;
+		this.submitting = false;
+	};
 }
