@@ -192,4 +192,20 @@ export default class ActivityStore {
 			runInAction(() => (this.submitting = false));
 		}
 	};
+
+	updateActivitiesWhenProfileMainPhotoUpdated = (profile: Profile) => {
+		this.activityRegistry.forEach((activity) => {
+			if (activity.hostUsername === profile.username) {
+				activity.host = profile;
+			}
+			for (let i = 0; i < activity.attendees!.length; i++) {
+				if (
+					activity.attendees &&
+					activity.attendees[i].username === profile.username
+				) {
+					activity.attendees[i] = profile;
+				}
+			}
+		});
+	};
 }

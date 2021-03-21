@@ -26,7 +26,9 @@ const ProfilePhotos = ({ profile }: Props) => {
 			loading,
 			setMainPhoto,
 			deletePhoto,
+			profile: _profile,
 		},
+		activityStore: { updateActivitiesWhenProfileMainPhotoUpdated },
 	} = useStore();
 	const [addPhotoMode, setAddPhotoMode] = useState(false);
 	const [target, setTarget] = useState("");
@@ -41,6 +43,7 @@ const ProfilePhotos = ({ profile }: Props) => {
 	) {
 		setTarget(e.currentTarget.name);
 		setMainPhoto(photo);
+		updateActivitiesWhenProfileMainPhotoUpdated(_profile!);
 	}
 
 	function handleDeletePhoto(
