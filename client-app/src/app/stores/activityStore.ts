@@ -193,7 +193,7 @@ export default class ActivityStore {
 		}
 	};
 
-	updateActivitiesWhenProfileMainPhotoUpdated = (profile: Profile) => {
+	updateActivitiesWhenProfileUpdated = (profile: Profile) => {
 		this.activityRegistry.forEach((activity) => {
 			if (activity.hostUsername === profile.username) {
 				activity.host = profile;
