@@ -11,14 +11,22 @@ import ActivityDetailedSidebar from "./ActivityDetailedSidebar";
 
 const ActivityDetails = () => {
 	const { activityStore } = useStore();
-	const { selectedActivity: activity, loadActivity, loading } = activityStore;
+	const {
+		selectedActivity: activity,
+		loadActivity,
+		loading,
+		clearSelectedActivity,
+	} = activityStore;
 	const { id } = useParams<{ id: string }>();
 
 	useEffect(() => {
 		if (id) {
 			loadActivity(id);
 		}
-	}, [id, loadActivity]);
+		return () => {
+			clearSelectedActivity();
+		};
+	}, [id, loadActivity, clearSelectedActivity]);
 
 	if (!activity || loading)
 		return <LoadingComponent inverted={true} content='Loading activity' />;
@@ -28,7 +36,7 @@ const ActivityDetails = () => {
 			<Grid.Column width='10'>
 				<ActivityDetailedHeader activity={activity} />
 				<ActivityDetailedInfo activity={activity} />
-				<ActivityDetailedChat />
+				<ActivityDetailedChat activityId={activity.id} />
 			</Grid.Column>
 			<Grid.Column width='6'>
 				<ActivityDetailedSidebar activity={activity} />

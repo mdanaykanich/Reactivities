@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Application.Interfaces;
 using Infrastructure.Security;
 using Infrastructure.Photos;
+using API.SignalR;
 
 namespace API
 {
@@ -45,7 +46,11 @@ namespace API
 			{
 				opt.AddPolicy("CorsPolicy", policy =>
 				{
-					policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+					policy
+						.AllowAnyHeader()
+						.AllowAnyMethod()
+						.AllowCredentials()
+						.WithOrigins("http://localhost:3000");
 				});
 			});
 
@@ -64,6 +69,7 @@ namespace API
 			services.AddIdentityServices(Configuration);
 			services.AddScoped<IPhotoAccessor, PhotoAccessor>();
 			services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
+			services.AddSignalR();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,6 +95,7 @@ namespace API
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
+				endpoints.MapHub<ChatHub>("/chat");
 			});
 		}
 	}

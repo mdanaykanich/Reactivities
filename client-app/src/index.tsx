@@ -14,13 +14,11 @@ import { createBrowserHistory } from "history";
 export const history = createBrowserHistory();
 
 ReactDOM.render(
-	<React.StrictMode>
-		<StoreContext.Provider value={store}>
-			<Router history={history}>
-				<App />
-			</Router>
-		</StoreContext.Provider>
-	</React.StrictMode>,
+	<StoreContext.Provider value={store}>
+		<Router history={history}>
+			<App />
+		</Router>
+	</StoreContext.Provider>,
 	document.getElementById("root")
 );
 

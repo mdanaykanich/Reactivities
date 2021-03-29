@@ -206,6 +206,9 @@ export default class ActivityStore {
 					activity.attendees[i] = profile;
 				}
 			}
+			if (activity.id === this.selectedActivity?.id) {
+				this.selectedActivity = activity;
+			}
 		});
 	};
 
@@ -215,5 +218,9 @@ export default class ActivityStore {
 		this.editMode = false;
 		this.loading = false;
 		this.submitting = false;
+	};
+
+	clearSelectedActivity = () => {
+		this.selectedActivity = undefined;
 	};
 }
