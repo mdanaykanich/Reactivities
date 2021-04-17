@@ -122,6 +122,7 @@ export default class ActivityStore {
 					this.activityRegistry.set(activity.id, updatedActivity as Activity);
 					this.selectedActivity = updatedActivity as Activity;
 				}
+				this.submitting = false;
 			});
 		} catch (error) {
 			console.log(error);
@@ -198,17 +199,27 @@ export default class ActivityStore {
 			if (activity.hostUsername === profile.username) {
 				activity.host = profile;
 			}
-			for (let i = 0; i < activity.attendees!.length; i++) {
-				if (
-					activity.attendees &&
-					activity.attendees[i].username === profile.username
-				) {
-					activity.attendees[i] = profile;
+			activity.attendees!.forEach((attendee, index) => {
+				if (attendee.username === profile.username) {
+					activity.attendees![index] = profile;
 				}
-			}
+			});
 			if (activity.id === this.selectedActivity?.id) {
 				this.selectedActivity = activity;
 			}
+		});
+	};
+
+	updateAttendeeFollowing = (username: string) => {
+		this.activityRegistry.forEach((activity) => {
+			activity.attendees!.forEach((attendee) => {
+				if (attendee.username === username) {
+					attendee.following
+						? attendee.followersCount--
+						: attendee.followersCount++;
+					attendee.following = !attendee.following;
+				}
+			});
 		});
 	};
 

@@ -6,6 +6,9 @@ export interface Profile {
 	bio?: string;
 	image?: string;
 	photos?: Photo[];
+	followersCount: number;
+	followingsCount: number;
+	following: boolean;
 }
 
 export class Profile implements Profile {
